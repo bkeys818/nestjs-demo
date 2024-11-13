@@ -16,7 +16,7 @@ import { AdvisorModule } from './advisor/advisor.module'
       password: 'wZYwaR!xfYRzT2n2HC',
       database: 'college',
       entities: [],
-      synchronize: true,
+      // synchronize: true,
       autoLoadEntities: true,
     }),
     CourseModule,

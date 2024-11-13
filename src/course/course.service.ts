@@ -1,8 +1,9 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { Repository, In } from 'typeorm'
 import { Course } from './course.entity'
 import { CreateCourseDTO } from './course.dto'
+import type { Student } from '../student/student.entity'
 
 @Injectable()
 export class CourseService {
@@ -11,8 +12,9 @@ export class CourseService {
     private repo: Repository<Course>,
   ) {}
 
-  getAll(): Promise<Course[]> {
+  getAll(ids?: number[]): Promise<Course[]> {
     return this.repo.find({
+      where: ids ? { id: In(ids) } : undefined,
       relations: { students: true },
     })
   }
@@ -42,5 +44,17 @@ export class CourseService {
 
   async remove(course: Course) {
     return await this.repo.remove(course)
+  }
+
+  async addStudents(course: Course, students: Student[]) {
+    course.students.push(...students)
+    return await this.repo.save(course)
+  }
+
+  async removeStudents(course: Course, studentIds: number[]) {
+    course.students = course.students.filter(
+      (student) => !studentIds.includes(student.id),
+    )
+    return await this.repo.save(course)
   }
 }

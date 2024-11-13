@@ -40,4 +40,25 @@ export class StudentController {
     const student = await this.studentService.get(id)
     return await this.studentService.remove(student)
   }
+
+  @Post(':studentId/courses')
+  async addCourses(
+    @Param('studentId') studentId: number,
+    @Body() courseIds: number[],
+  ): Promise<Student> {
+    const [student, courses] = await Promise.all([
+      this.studentService.get(studentId),
+      this.courseService.getAll(courseIds),
+    ])
+    return await this.studentService.addCourses(student, courses)
+  }
+
+  @Delete(':studentId/courses')
+  async removeCourses(
+    @Param('studentId') studentId: number,
+    @Body() courseIds: number[],
+  ): Promise<Student> {
+    const student = await this.studentService.get(studentId)
+    return await this.studentService.removeCourses(student, courseIds)
+  }
 }
